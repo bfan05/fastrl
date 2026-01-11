@@ -6,7 +6,7 @@ SPEC_STEPS=8
 NUM_DRAFT_TOKENS=48
 TOPKS=4
 MAX_BS=1
-TP=2
+TP=${TP:-2}
 
 python scripts/bench_speculative_decoding.py \
     --data_dir $DATA_PATH \

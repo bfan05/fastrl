@@ -8,6 +8,8 @@ import torch
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
+import asyncio
+
 def load_json_file(json_file):
     with open(json_file, "r") as f:
         prompts = json.load(f)
@@ -43,7 +45,7 @@ def main():
     sampling_params = {
         "n": 1,
         "temperature": 0.6,
-        "max_new_tokens": 2048,
+        "max_new_tokens": 256,
     }
     # Set speculative args based on algorithm
     speculative_args = {}
@@ -77,11 +79,16 @@ def main():
         cuda_graph_max_bs=args.max_bs,
         tp_size=args.tp_size,
         max_running_requests=args.max_bs,
-        mem_fraction_static=0.6,
-        context_length=4096,
+        mem_fraction_static=0.75,
+        context_length=2048,
         attention_backend=args.attention_backend,
         **speculative_args,
     )
+
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        asyncio.set_event_loop(asyncio.new_event_loop())
 
     total_runs = 2
 
